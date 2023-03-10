@@ -42,17 +42,18 @@ def play_game(word):
     alphabet = set('abcdefghijklmnopqrstuvwxyz')
     used_letters = set([])
     guess_counter = 1
+    outcomes = []
     guesses = []
     while guess_counter < 7:
         while True:
             guess = input(f'Guess #{guess_counter}? ').lower()
             if is_word_valid(guess):
                 break
-
+        guesses.append(guess)
         outcome, used_letters = compare_guess(guess, word, used_letters)
-        guesses.append(outcome)
-        for g in guesses:
-            print(f'          {g}')
+        outcomes.append(outcome)
+        for g, o in zip(guesses, outcomes):
+            print(f'        | {g} | {o} |')
         if outcome.lower() == word:
             return True
         for letter in sorted(alphabet - used_letters):
