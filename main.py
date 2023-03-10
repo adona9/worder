@@ -19,7 +19,7 @@ def compare_guess(guess, word, used_letters):
         elif guess[i] in word:
             outcome += guess[i].lower()
         else:
-            outcome += ' '
+            outcome += '.'
             used_letters.add(guess[i])
     return outcome, used_letters
 
@@ -41,27 +41,33 @@ def is_word_valid(w):
 def play_game(word):
     alphabet = set('abcdefghijklmnopqrstuvwxyz')
     used_letters = set([])
-    attempt_counter = 0
+    guess_counter = 1
     guesses = []
-    while attempt_counter < 6:
+    while guess_counter < 7:
         while True:
-            guess = input('Guess? ')
+            guess = input(f'Guess #{guess_counter}? ').lower()
             if is_word_valid(guess):
                 break
 
         outcome, used_letters = compare_guess(guess, word, used_letters)
         guesses.append(outcome)
-        print(guesses)
-        print(sorted(alphabet - used_letters))
+        for g in guesses:
+            print(f'          {g}')
         if outcome.lower() == word:
-            break
-        attempt_counter += 1
+            return True
+        for letter in sorted(alphabet - used_letters):
+            print(f'{letter} ', end='')
+        print('')
+        guess_counter += 1
+    return False
 
 
 def main():
     word = get_random_word()
-    play_game(word)
-    print(word)
+    if play_game(word):
+        print('You win!')
+    else:
+        print(f'The word was "{word}"')
 
 
 if __name__ == '__main__':
