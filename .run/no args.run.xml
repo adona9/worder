@@ -1,5 +1,5 @@
 <component name="ProjectRunConfigurationManager">
-  <configuration default="false" name="Vanilla" type="PythonConfigurationType" factoryName="Python">
+  <configuration default="false" name="no args" type="PythonConfigurationType" factoryName="Python">
     <module name="worder" />
     <option name="INTERPRETER_OPTIONS" value="" />
     <option name="PARENT_ENVS" value="true" />

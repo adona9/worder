@@ -1,12 +1,14 @@
+#!/usr/bin/python3
 """Main program of a word guessing game."""
+import argparse
 import random
 import re
 import sys
 
 
-def get_random_word():
+def get_random_word(word_length):
     """Grabs a random word from the given dictionary."""
-    with open('./words', encoding='utf-8') as word_file:
+    with open(f'./word{word_length}', encoding='utf-8') as word_file:
         dictionary = word_file.read().splitlines()
     random.seed()
     chosen = int(round(random.random() * len(dictionary), 0))
@@ -29,13 +31,13 @@ def compare_guess(guess, word, used_letters):
     return outcome, used_letters
 
 
-def is_word_valid(word):
+def is_word_valid(word, word_length):
     """Returns True if a word is in the dictionary."""
-    if len(word) != 5:
-        print(f'{word} is not a 5-letter word. Try again.')
+    if len(word) != word_length:
+        print(f'{word} is not a {word_length}-letter word. Try again.')
         return False
     pattern = re.compile(f'{word}')
-    with open('./words', encoding='utf-8') as word_file:
+    with open(f'./word{word_length}', encoding='utf-8') as word_file:
         dictionary = word_file.read()
     is_in_dictionary = pattern.search(dictionary)
     if not is_in_dictionary:
@@ -54,7 +56,7 @@ def play_game(word):
     while guess_counter < 7:
         while True:
             guess = input(f'Guess #{guess_counter}? ').lower()
-            if is_word_valid(guess):
+            if is_word_valid(guess, len(word)):
                 break
         guesses.append(guess)
         outcome, used_letters = compare_guess(guess, word, used_letters)
@@ -88,7 +90,14 @@ def get_final_message(win, tries, word):
 
 def main():
     """Main function."""
-    word = get_random_word()
+    parser = argparse.ArgumentParser(
+        prog='worder',
+        description='Word guessing game.',
+        epilog='Good luck!')
+    parser.add_argument('-l', '--length', default="5")
+    args = parser.parse_args()
+    word_length = args.length
+    word = get_random_word(word_length)
     win, tries = play_game(word)
     print(get_final_message(win, tries, word))
 
