@@ -1,3 +1,4 @@
+"""Main program of a word guessing game."""
 import random
 import re
 import sys
@@ -17,14 +18,14 @@ def compare_guess(guess, word, used_letters):
     and lowercase letters when the letter is in the mystery word, but it's in the wrong
     place."""
     outcome = ''
-    for i in range(0, len(word)):
-        if guess[i] == word[i]:
-            outcome += guess[i].upper()
-        elif guess[i] in word:
-            outcome += guess[i].lower()
+    for index, letter in enumerate(word):
+        if guess[index] == letter:
+            outcome += letter.upper()
+        elif guess[index] in word:
+            outcome += guess[index].lower()
         else:
             outcome += '.'
-            used_letters.add(guess[i])
+            used_letters.add(guess[index])
     return outcome, used_letters
 
 
@@ -61,21 +62,35 @@ def play_game(word):
         for guessed, result in zip(guesses, outcomes):
             print(f'        | {guessed} | {result} |')
         if outcome.lower() == word:
-            return True
+            return True, guess_counter
         for letter in sorted(alphabet - used_letters):
             print(f'{letter} ', end='')
         print('')
         guess_counter += 1
-    return False
+    return False, guess_counter
+
+
+def get_final_message(win, tries, word):
+    """Returns the final message of the game."""
+    if win:
+        return [
+            'This... can''t... be... happening...',
+            'You win! You were incredibly lucky!',
+            'By luck and skill, you win!',
+            'Terrific!',
+            'Nicely done!',
+            'You win, but you can do better than that!',
+            'You barely made it, yikes!',
+            '?'
+        ][tries]
+    return f'You lost. The word was "{word}".'
 
 
 def main():
     """Main function."""
     word = get_random_word()
-    if play_game(word):
-        print('You win!')
-    else:
-        print(f'The word was "{word}"')
+    win, tries = play_game(word)
+    print(get_final_message(win, tries, word))
 
 
 if __name__ == '__main__':
