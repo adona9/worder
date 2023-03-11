@@ -4,14 +4,18 @@ import sys
 
 
 def get_random_word():
-    with open('./words') as f:
-        dictionary = f.read().splitlines()
+    """Grabs a random word from the given dictionary."""
+    with open('./words', encoding='utf-8') as word_file:
+        dictionary = word_file.read().splitlines()
     random.seed()
     chosen = int(round(random.random() * len(dictionary), 0))
     return dictionary[chosen]
 
 
 def compare_guess(guess, word, used_letters):
+    """Returns uppercase letters when the guessed letter is in the correct place
+    and lowercase letters when the letter is in the mystery word, but it's in the wrong
+    place."""
     outcome = ''
     for i in range(0, len(word)):
         if guess[i] == word[i]:
@@ -24,21 +28,23 @@ def compare_guess(guess, word, used_letters):
     return outcome, used_letters
 
 
-def is_word_valid(w):
-    if len(w) != 5:
-        print(f'{w} is not a 5-letter word. Try again.')
+def is_word_valid(word):
+    """Returns True if a word is in the dictionary."""
+    if len(word) != 5:
+        print(f'{word} is not a 5-letter word. Try again.')
         return False
-    pattern = re.compile(f'{w}')
-    with open('./words') as f:
-        dictionary = f.read()
+    pattern = re.compile(f'{word}')
+    with open('./words', encoding='utf-8') as word_file:
+        dictionary = word_file.read()
     is_in_dictionary = pattern.search(dictionary)
     if not is_in_dictionary:
-        print(f'{w} is not in the dictionary. Try again.')
+        print(f'{word} is not in the dictionary. Try again.')
         return False
     return True
 
 
 def play_game(word):
+    """Plays a word guessing game."""
     alphabet = set('abcdefghijklmnopqrstuvwxyz')
     used_letters = set([])
     guess_counter = 1
@@ -52,8 +58,8 @@ def play_game(word):
         guesses.append(guess)
         outcome, used_letters = compare_guess(guess, word, used_letters)
         outcomes.append(outcome)
-        for g, o in zip(guesses, outcomes):
-            print(f'        | {g} | {o} |')
+        for guessed, result in zip(guesses, outcomes):
+            print(f'        | {guessed} | {result} |')
         if outcome.lower() == word:
             return True
         for letter in sorted(alphabet - used_letters):
@@ -64,6 +70,7 @@ def play_game(word):
 
 
 def main():
+    """Main function."""
     word = get_random_word()
     if play_game(word):
         print('You win!')
