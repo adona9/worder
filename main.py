@@ -74,7 +74,7 @@ def get_final_message(win, tries, word):
     """Returns the final message of the game."""
     if win:
         return [
-            'This... can''t... be... happening...',
+            'This... can\'t... be... happening...',
             'You win! You were incredibly lucky!',
             'By luck and skill, you win!',
             'Terrific!',
