@@ -6,6 +6,18 @@ import re
 import sys
 
 
+class bcolors:
+    HEADER = '\033[95m'
+    OKBLUE = '\033[94m'
+    OKCYAN = '\033[96m'
+    OKGREEN = '\033[92m'
+    WARNING = '\033[93m'
+    FAIL = '\033[91m'
+    ENDC = '\033[0m'
+    BOLD = '\033[1m'
+    UNDERLINE = '\033[4m'
+
+
 def get_random_word(word_length):
     """Grabs a random word from the given dictionary."""
     with open(f'./word{word_length}', encoding='utf-8') as word_file:
@@ -20,15 +32,18 @@ def compare_guess(guess, word, used_letters):
     and lowercase letters when the letter is in the mystery word, but it's in the wrong
     place."""
     outcome = ''
+    word_length = len(word)
+    correct_counter = 0
     for index, letter in enumerate(word):
         if guess[index] == letter:
-            outcome += letter.upper()
+            correct_counter += 1
+            outcome += f'{bcolors.OKGREEN}{letter.upper()}{bcolors.ENDC}'
         elif guess[index] in word:
-            outcome += guess[index].lower()
+            outcome += f'{bcolors.WARNING}{guess[index].lower()}{bcolors.ENDC}'
         else:
             outcome += '.'
             used_letters.add(guess[index])
-    return outcome, used_letters
+    return outcome, used_letters, correct_counter == word_length
 
 
 def is_word_valid(word, word_length):
@@ -59,14 +74,14 @@ def play_game(word):
             if is_word_valid(guess, len(word)):
                 break
         guesses.append(guess)
-        outcome, used_letters = compare_guess(guess, word, used_letters)
+        outcome, used_letters, won = compare_guess(guess, word, used_letters)
         outcomes.append(outcome)
         for guessed, result in zip(guesses, outcomes):
-            print(f'        | {guessed} | {result} |')
-        if outcome.lower() == word:
+            print(f'        | {guessed.upper()} | {result} |')
+        if won:
             return True, guess_counter
         for letter in sorted(alphabet - used_letters):
-            print(f'{letter} ', end='')
+            print(f'{letter.upper()} ', end='')
         print('')
         guess_counter += 1
     return False, guess_counter
