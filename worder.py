@@ -114,9 +114,13 @@ def main():
     parser.add_argument('-l', '--length', default="5")
     args = parser.parse_args()
     word_length = args.length
-    word = get_random_word(word_length)
-    win, tries = play_game(word)
-    print(get_final_message(win, tries, word))
+    print(f"Guess a {word_length}-letter game in 6 tries.")
+    while True:
+        word = get_random_word(word_length)
+        win, tries = play_game(word)
+        print(get_final_message(win, tries, word))
+        if input("One more (y/n)?").lower() != "y":
+            break
 
 
 if __name__ == '__main__':
