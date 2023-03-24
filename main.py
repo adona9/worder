@@ -6,7 +6,9 @@ import re
 import sys
 
 
-class bcolors:
+# pylint: disable-next=R0903
+class UiColors:
+    """Definitions of UI colors"""
     HEADER = '\033[95m'
     OKBLUE = '\033[94m'
     OKCYAN = '\033[96m'
@@ -37,9 +39,9 @@ def compare_guess(guess, word, used_letters):
     for index, letter in enumerate(word):
         if guess[index] == letter:
             correct_counter += 1
-            outcome += f'{bcolors.OKGREEN}{letter.upper()}{bcolors.ENDC}'
+            outcome += f'{UiColors.OKGREEN}{letter.upper()}{UiColors.ENDC}'
         elif guess[index] in word:
-            outcome += f'{bcolors.WARNING}{guess[index].lower()}{bcolors.ENDC}'
+            outcome += f'{UiColors.WARNING}{guess[index].lower()}{UiColors.ENDC}'
         else:
             outcome += '.'
             used_letters.add(guess[index])
