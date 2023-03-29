@@ -12,12 +12,25 @@ class UiColors:
     HEADER = '\033[95m'
     OKBLUE = '\033[94m'
     OKCYAN = '\033[96m'
-    OKGREEN = '\033[92m'
-    WARNING = '\033[93m'
+    GREEN_BACKGROUND = '\033[30m\033[102m'
+    YELLOW_BACKGROUND = '\033[30m\033[103m'
+    GREY = '\033[37m'
     FAIL = '\033[91m'
     ENDC = '\033[0m'
     BOLD = '\033[1m'
     UNDERLINE = '\033[4m'
+
+
+def right_letter_right_place(c):
+    return f'{UiColors.GREEN_BACKGROUND}{c}{UiColors.ENDC}'
+
+
+def right_letter_wrong_place(c):
+    return f'{UiColors.YELLOW_BACKGROUND}{c}{UiColors.ENDC}'
+
+
+def wrong_letter(c):
+    return f'{UiColors.GREY}{c}{UiColors.ENDC}'
 
 
 class WorderGame:
@@ -42,16 +55,17 @@ class WorderGame:
             for index, letter in enumerate(word):
                 if guess[index] == letter:
                     correct_counter += 1
-                    outcome += f'{UiColors.OKGREEN}{letter.upper()}{UiColors.ENDC}'
+                    outcome += right_letter_right_place(letter.upper())
                 elif guess[index] in word:
-                    outcome += f'{UiColors.WARNING}{guess[index].lower()}{UiColors.ENDC}'
+                    outcome += right_letter_wrong_place(guess[index].upper())
                 else:
-                    outcome += '.'
+                    outcome += wrong_letter(guess[index].upper())
                     self.used_letters.add(guess[index])
+                outcome += ' '
             self.won = correct_counter == self.word_length
             self.outcomes.append(outcome)
             for guessed, result in zip(self.guesses, self.outcomes):
-                print(f'        | {guessed.upper()} | {result} |')
+                print(f'        | {result}|')
             if self.won:
                 break
             for letter in sorted(self.alphabet - self.used_letters):
