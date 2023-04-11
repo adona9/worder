@@ -8,13 +8,14 @@ import sys
 
 # pylint: disable-next=R0903
 class UiColors:
-    """Definitions of UI colors"""
+    """Definitions of UI colors; for all details check
+    https://stackoverflow.com/questions/4842424/list-of-ansi-color-escape-sequences """
     HEADER = '\033[95m'
     OKBLUE = '\033[94m'
     OKCYAN = '\033[96m'
-    GREEN_BACKGROUND = '\033[1;30;102m'
-    YELLOW_BACKGROUND = '\033[1;30;103m'
-    GREY = '\033[1;30;47m'
+    GREEN_BACKGROUND = '\033[30;102m'
+    YELLOW_BACKGROUND = '\033[30;103m'
+    GREY = '\033[30;47m'
     FAIL = '\033[91m'
     ENDC = '\033[0m'
     BOLD = '\033[1m'
@@ -22,15 +23,15 @@ class UiColors:
 
 
 def right_letter_right_place(c):
-    return f'{UiColors.GREEN_BACKGROUND}{c}{UiColors.ENDC}'
+    return f'{UiColors.GREEN_BACKGROUND} {c} {UiColors.ENDC}'
 
 
 def right_letter_wrong_place(c):
-    return f'{UiColors.YELLOW_BACKGROUND}{c}{UiColors.ENDC}'
+    return f'{UiColors.YELLOW_BACKGROUND} {c} {UiColors.ENDC}'
 
 
 def wrong_letter(c):
-    return f'{UiColors.GREY}{c}{UiColors.ENDC}'
+    return f'{UiColors.GREY} {c} {UiColors.ENDC}'
 
 
 class WorderGame:
