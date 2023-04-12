@@ -22,6 +22,35 @@ class UiColors:
     UNDERLINE = '\033[4m'
 
 
+class Tile:
+    """Represents a tile containing a letter in the game board"""
+
+    GREEN_BACKGROUND = '\033[30;102m'
+    YELLOW_BACKGROUND = '\033[30;103m'
+    GREY_BACKGROUND = '\033[30;47m'
+    DARK_BACKGROUND = '\033[48;5;237m'
+    END_COL = '\033[0m'
+
+    def __init__(self, letter):
+        self.letter = letter
+        self.is_correct = None
+        self.is_partially_correct = None
+        self.is_wrong = None
+
+    def __str__(self):
+        return self.to_string()
+
+    def to_string(self):
+        if self.is_correct:
+            return f'{self.GREEN_BACKGROUND} {self.letter} {self.END_COL}'
+        elif self.is_partially_correct:
+            return f'{self.YELLOW_BACKGROUND} {self.letter} {self.END_COL}'
+        elif self.is_wrong:
+            return f'{self.GREY_BACKGROUND} {self.letter} {self.END_COL}'
+        else:
+            return f'{self.DARK_BACKGROUND} {self.letter} {self.END_COL}'
+
+
 def right_letter_right_place(c):
     return f'{UiColors.GREEN_BACKGROUND} {c} {UiColors.ENDC}'
 
@@ -41,7 +70,7 @@ class WorderGame:
         self.word_length = word_length
         self.alphabet = set('abcdefghijklmnopqrstuvwxyz')
         self.used_letters = set([])
-        self.outcomes = []
+        self.tile_rows = []
         self.guesses = []
         self.won = False
 
@@ -51,26 +80,31 @@ class WorderGame:
         while guess_counter < 7:
             guess = self.read_guess(guess_counter)
             self.guesses.append(guess)
-            outcome = ''
+            tile_row = []
             correct_counter = 0
             for index, letter in enumerate(word):
+                tile = Tile(guess[index].upper())
+                tile_row.append(tile)
                 if guess[index] == letter:
                     correct_counter += 1
-                    outcome += right_letter_right_place(letter.upper())
+                    tile.is_correct = True
                 elif guess[index] in word:
-                    outcome += right_letter_wrong_place(guess[index].upper())
+                    tile.is_partially_correct = True
                 else:
-                    outcome += wrong_letter(guess[index].upper())
+                    tile.is_wrong = True
                     self.used_letters.add(guess[index])
-                outcome += ' '
+
             self.won = correct_counter == self.word_length
-            self.outcomes.append(outcome)
-            for guessed, result in zip(self.guesses, self.outcomes):
-                print(f'        | {result}|')
+            self.tile_rows.append(tile_row)
+            for tr in self.tile_rows:
+                print('        |', end=' ')
+                for t in tr:
+                    print(t, end=' ')
+                print('|')
             if self.won:
                 break
             for letter in sorted(self.alphabet - self.used_letters):
-                print(f'{letter.upper()} ', end='')
+                print(f'{Tile(letter.upper())} ', end='')
             print('')
             guess_counter += 1
         print(get_final_message(self.won, guess_counter, word))
