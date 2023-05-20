@@ -40,6 +40,9 @@ class Tile:
     def __str__(self):
         return self.to_string()
 
+    def is_unused(self):
+        return self.is_correct is None and self.is_partially_correct is None and self.is_wrong is None
+
     def to_string(self):
         if self.is_correct:
             return f'{self.GREEN_BACKGROUND} {self.letter} {self.END_COL}'
@@ -51,16 +54,11 @@ class Tile:
             return f'{self.DARK_BACKGROUND} {self.letter} {self.END_COL}'
 
 
-def right_letter_right_place(c):
-    return f'{UiColors.GREEN_BACKGROUND} {c} {UiColors.ENDC}'
-
-
-def right_letter_wrong_place(c):
-    return f'{UiColors.YELLOW_BACKGROUND} {c} {UiColors.ENDC}'
-
-
-def wrong_letter(c):
-    return f'{UiColors.GREY} {c} {UiColors.ENDC}'
+def blank_out_first_occurrence(word, param):
+    for index, letter in enumerate(word):
+        if letter == param:
+            word[index] = " "
+            return
 
 
 class WorderGame:
@@ -75,23 +73,29 @@ class WorderGame:
         self.won = False
 
     def play(self):
-        word = get_random_word(self.word_length)
+        secret_word = get_random_word(self.word_length)
         guess_counter = 1
         while guess_counter < 7:
             guess = self.read_guess(guess_counter)
             self.guesses.append(guess)
             tile_row = []
-            correct_counter = 0
-            for index, letter in enumerate(word):
+            for index, letter in enumerate(secret_word):
                 tile = Tile(guess[index].upper())
                 tile_row.append(tile)
+            correct_counter = 0
+            unguessed_letters = list(f'{secret_word}')
+            for index, letter in enumerate(unguessed_letters):
                 if guess[index] == letter:
                     correct_counter += 1
-                    tile.is_correct = True
-                elif guess[index] in word:
-                    tile.is_partially_correct = True
+                    tile_row[index].is_correct = True
+                    unguessed_letters[index] = " "
+            for index, letter in enumerate(unguessed_letters):
+                if guess[index] in unguessed_letters:
+                    if tile_row[index].is_unused():
+                        tile_row[index].is_partially_correct = True
+                        blank_out_first_occurrence(unguessed_letters, guess[index])
                 else:
-                    tile.is_wrong = True
+                    tile_row[index].is_wrong = True
                     self.used_letters.add(guess[index])
 
             self.won = correct_counter == self.word_length
@@ -107,7 +111,7 @@ class WorderGame:
                 print(f'{Tile(letter.upper())} ', end='')
             print('')
             guess_counter += 1
-        print(get_final_message(self.won, guess_counter, word))
+        print(get_final_message(self.won, guess_counter, secret_word))
 
     def read_guess(self, guess_counter):
         """Read a guess from stdin"""
