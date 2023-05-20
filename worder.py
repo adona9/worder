@@ -31,7 +31,7 @@ class Tile:
     DARK_BACKGROUND = '\033[48;5;237m'
     END_COL = '\033[0m'
 
-    def __init__(self, letter):
+    def __init__(self, letter: str):
         self.letter = letter
         self.is_correct = None
         self.is_partially_correct = None
@@ -45,13 +45,13 @@ class Tile:
 
     def to_string(self):
         if self.is_correct:
-            return f'{self.GREEN_BACKGROUND} {self.letter} {self.END_COL}'
+            return f'{self.GREEN_BACKGROUND} {self.letter.upper()} {self.END_COL}'
         elif self.is_partially_correct:
-            return f'{self.YELLOW_BACKGROUND} {self.letter} {self.END_COL}'
+            return f'{self.YELLOW_BACKGROUND} {self.letter.upper()} {self.END_COL}'
         elif self.is_wrong:
-            return f'{self.GREY_BACKGROUND} {self.letter} {self.END_COL}'
+            return f'{self.DARK_BACKGROUND} {self.letter.upper()} {self.END_COL}'
         else:
-            return f'{self.DARK_BACKGROUND} {self.letter} {self.END_COL}'
+            return f'{self.GREY_BACKGROUND} {self.letter.upper()} {self.END_COL}'
 
 
 def blank_out_first_occurrence(word, param):
@@ -66,7 +66,7 @@ class WorderGame:
 
     def __init__(self, word_length):
         self.word_length = word_length
-        self.alphabet = set('abcdefghijklmnopqrstuvwxyz')
+        self.alphabet = list(map(lambda letter: Tile(letter), list('abcdefghijklmnopqrstuvwxyz')))
         self.used_letters = set([])
         self.tile_rows = []
         self.guesses = []
@@ -80,7 +80,7 @@ class WorderGame:
             self.guesses.append(guess)
             tile_row = []
             for index, letter in enumerate(secret_word):
-                tile = Tile(guess[index].upper())
+                tile = Tile(guess[index])
                 tile_row.append(tile)
             correct_counter = 0
             unguessed_letters = list(f'{secret_word}')
@@ -107,9 +107,22 @@ class WorderGame:
                 print('|')
             if self.won:
                 break
-            for letter in sorted(self.alphabet - self.used_letters):
-                print(f'{Tile(letter.upper())} ', end='')
+            for every in self.alphabet:
+                if every.letter in self.used_letters:
+                    every.is_wrong = True
+            for tile in tile_row:
+                if tile.is_correct:
+                    for every in self.alphabet:
+                        if every.letter == tile.letter:
+                            every.is_correct = True
+                if tile.is_partially_correct:
+                    for every in self.alphabet:
+                        if every.letter == tile.letter:
+                            every.is_partially_correct = True
             print('')
+            for every in self.alphabet:
+                print(f'{every} ', end='')
+            print('\n')
             guess_counter += 1
         print(get_final_message(self.won, guess_counter, secret_word))
 
