@@ -18,6 +18,10 @@ After each guess, tiles are colored to show how close you were:
 
 The alphabet row below the board tracks which letters you've used and their status. At the end of each round, you can play again with a new word.
 
+## Screenshot
+
+![](assets/screenshot.png)
+
 ## Requirements
 
 Python 3.8+, no external dependencies.
