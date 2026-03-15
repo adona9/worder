@@ -125,12 +125,21 @@ class WorderGame:
                     for every in self.alphabet:
                         if every.letter == tile.letter:
                             every.is_partially_correct = True
-            print('')
-            for every in self.alphabet:
-                print(f'{every} ', end='')
-            print('\n')
+            self._print_keyboard()
             guess_counter += 1
         print(get_final_message(self.won, guess_counter, secret_word))
+
+    def _print_keyboard(self):
+        """Print the alphabet as a QWERTY keyboard layout."""
+        key_map = {tile.letter: tile for tile in self.alphabet}
+        rows = ['qwertyuiop', 'asdfghjkl', 'zxcvbnm']
+        print()
+        for indent, row in enumerate(rows):
+            print('  ' * indent, end='')
+            for letter in row:
+                print(f'{key_map[letter]} ', end='')
+            print()
+        print()
 
     def read_guess(self, guess_counter):
         """Read a guess from stdin"""
