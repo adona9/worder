@@ -1,0 +1,10 @@
+[project]
+name = "worder"
+version = "0.1.0"
+description = "Terminal-based word guessing game"
+readme = "README.md"
+requires-python = ">=3.8"
+dependencies = []
+
+[project.scripts]
+worder = "worder:main"

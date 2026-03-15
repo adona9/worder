@@ -1,8 +1,8 @@
 #!/usr/bin/python3
 """Main program of a word guessing game."""
 import argparse
+import pathlib
 import random
-import re
 import sys
 
 
@@ -66,6 +66,7 @@ class WorderGame:
 
     def __init__(self, word_length):
         self.word_length = word_length
+        self.dictionary = load_dictionary(word_length)
         self.alphabet = list(map(lambda letter: Tile(letter), list('abcdefghijklmnopqrstuvwxyz')))
         self.used_letters = set([])
         self.tile_rows = []
@@ -73,7 +74,7 @@ class WorderGame:
         self.won = False
 
     def play(self):
-        secret_word = get_random_word(self.word_length)
+        secret_word = random.choice(list(self.dictionary))
         guess_counter = 1
         while guess_counter < 7:
             guess = self.read_guess(guess_counter)
@@ -130,33 +131,21 @@ class WorderGame:
         """Read a guess from stdin"""
         while True:
             guess = input(f'Guess #{guess_counter}? ').lower()
-            if is_word_valid(guess, self.word_length):
-                break
+            if len(guess) != self.word_length:
+                print(f'{guess} is not a {self.word_length}-letter word. Try again.')
+                continue
+            if guess not in self.dictionary:
+                print(f'{guess} is not in the dictionary. Try again.')
+                continue
+            break
         return guess
 
 
-def get_random_word(word_length):
-    """Grabs a random word from the given dictionary."""
-    with open(f'./word{word_length}', encoding='utf-8') as word_file:
-        dictionary = word_file.read().splitlines()
-    random.seed()
-    chosen = int(round(random.random() * len(dictionary), 0))
-    return dictionary[chosen]
-
-
-def is_word_valid(word, word_length):
-    """Returns True if a word is in the dictionary."""
-    if len(word) != word_length:
-        print(f'{word} is not a {word_length}-letter word. Try again.')
-        return False
-    pattern = re.compile(f'{word}')
-    with open(f'./word{word_length}', encoding='utf-8') as word_file:
-        dictionary = word_file.read()
-    is_in_dictionary = pattern.search(dictionary)
-    if not is_in_dictionary:
-        print(f'{word} is not in the dictionary. Try again.')
-        return False
-    return True
+def load_dictionary(word_length):
+    """Loads the word list for the given length into a set."""
+    dictionary_path = pathlib.Path(__file__).parent / f'word{word_length}'
+    with open(dictionary_path, encoding='utf-8') as word_file:
+        return set(word_file.read().splitlines())
 
 
 def get_final_message(win, tries, word):
