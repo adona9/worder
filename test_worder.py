@@ -1,4 +1,5 @@
 """Unit tests for worder.py"""
+# pylint: disable=missing-class-docstring,missing-function-docstring
 import unittest
 from unittest.mock import patch
 

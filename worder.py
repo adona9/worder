@@ -41,20 +41,24 @@ class Tile:
         return self.to_string()
 
     def is_unused(self):
-        return self.is_correct is None and self.is_partially_correct is None and self.is_wrong is None
+        """Returns True if this tile has not been assigned a state yet."""
+        return (self.is_correct is None
+                and self.is_partially_correct is None
+                and self.is_wrong is None)
 
     def to_string(self):
+        """Returns the ANSI-colored string representation of this tile."""
         if self.is_correct:
             return f'{self.GREEN_BACKGROUND} {self.letter.upper()} {self.END_COL}'
-        elif self.is_partially_correct:
+        if self.is_partially_correct:
             return f'{self.YELLOW_BACKGROUND} {self.letter.upper()} {self.END_COL}'
-        elif self.is_wrong:
+        if self.is_wrong:
             return f'{self.DARK_BACKGROUND} {self.letter.upper()} {self.END_COL}'
-        else:
-            return f'{self.GREY_BACKGROUND} {self.letter.upper()} {self.END_COL}'
+        return f'{self.GREY_BACKGROUND} {self.letter.upper()} {self.END_COL}'
 
 
 def blank_out_first_occurrence(word, param):
+    """Replaces the first occurrence of param in word with a space."""
     for index, letter in enumerate(word):
         if letter == param:
             word[index] = " "
@@ -67,13 +71,14 @@ class WorderGame:
     def __init__(self, word_length):
         self.word_length = word_length
         self.dictionary = load_dictionary(word_length)
-        self.alphabet = list(map(lambda letter: Tile(letter), list('abcdefghijklmnopqrstuvwxyz')))
+        self.alphabet = [Tile(letter) for letter in 'abcdefghijklmnopqrstuvwxyz']
         self.used_letters = set([])
         self.tile_rows = []
         self.guesses = []
         self.won = False
 
-    def play(self):
+    def play(self):  # pylint: disable=too-many-branches
+        """Run one round of the game."""
         secret_word = random.choice(list(self.dictionary))
         guess_counter = 1
         while guess_counter < 7:

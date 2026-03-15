@@ -8,3 +8,9 @@ dependencies = []
 
 [project.scripts]
 worder = "worder:main"
+
+[dependency-groups]
+dev = [
+    "pylint>=3.2.7",
+    "pytest>=8.3.5",
+]
